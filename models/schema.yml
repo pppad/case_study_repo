@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  # --- STAGING LAYER ---
+  # Validating the datasets before they are joined
+  - name: stg_customers
+    description: "Cleaned customer source data from Customer.csv."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_transactions
+    description: "Standardized transactions with absolute values applied to ensure gross volume reporting."
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: amount_GBP
+        description: "Gross amount in GBP. Logic handles reversals (e.g., Transaction 107) via ABS()."
+
+  # --- MARTS LAYER ---
+  # Documenting the business logic and entity normalization
+  - name: fct_regulatory_transactions
+    description: "Joined table of customers and transactions. Normalises 'UK' and 'GBR' entities."
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+      - name: source_currency
+        description: "Primary field for distinguishing Cross-currency (R1/R2a) vs Same-currency (R2b)."
+
+  - name: fct_regulatory_reports
+    description: "Final aggregated output for the R1 and R2 regulatory requests."
+    columns:
+      - name: metric
+        description: "The specific regulatory label (e.g., R1: Total Cross-currency volume)."
+        tests:
+          - not_null
+      - name: amount_GBP
+        description: "Total volume for the metric. Final values: R1 (£5,497) and R2 (£1,231 and £0)."

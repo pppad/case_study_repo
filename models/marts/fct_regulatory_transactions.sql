@@ -1,6 +1,6 @@
 SELECT  t.transaction_id,
         t.customer_id,
-        t.amount_GBP,
+        t.amount_gbp,
         t.currency_route,
         t.transaction_date,
         c.customer_type,
