@@ -3,7 +3,7 @@ SELECT
     -- defensive coding for better Audit trail is used with SAFE_CAST to Null any surprises and COALESCE to dummy those NULLS
     COALESCE(SAFE_CAST(b AS int64), -1) AS transaction_id,
     COALESCE(SAFE_CAST(c AS int64), -1) AS customer_id,
-    COALESCE(ABS(SAFE_CAST(d AS float64)), 0) AS amount_GBP,  -- Filter out zero-value rows
+    COALESCE(ABS(SAFE_CAST(d AS float64)), 0) AS amount_GBP,  -- Filter out zero-value rows, and calculate Gross activity instead of NET
     COALESCE(e, "Unknown --> Unknown") AS currency_route,
     SAFE_CAST(f AS DATE) AS transaction_date
 FROM 
