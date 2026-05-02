@@ -18,7 +18,7 @@ models:
         tests:
           - unique
           - not_null
-      - name: amount_GBP
+      - name: amount_gbp
         description: "Gross amount in GBP. Logic handles reversals (e.g., Transaction 107) via ABS()."
 
   # --- MARTS LAYER ---
@@ -39,5 +39,5 @@ models:
         description: "The specific regulatory label (e.g., R1: Total Cross-currency volume)."
         tests:
           - not_null
-      - name: amount_GBP
+      - name: amount_gbp
         description: "Total volume for the metric. Final values: R1 (£5,497) and R2 (£1,231 and £0)."
