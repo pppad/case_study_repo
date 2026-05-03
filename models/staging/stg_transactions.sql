@@ -17,7 +17,7 @@ cleaned_transactions AS (
         -- the ambiguity is documented here and after Compliance signs-off only the intended metric should remain 
         COALESCE(ABS(SAFE_CAST(d AS float64)), 0) AS amount_gbp_gross,  -- Filter out zero-value rows, and calculate Gross activity by converting negative values to positive
         COALESCE(SAFE_CAST(d AS float64), 0) AS amount_gbp_net,  -- Filter out zero-value rows, and calculate NET activity leaving negative values as is
-        COALESCE(e, "Unknown --> Unknown") AS currency_route,
+        COALESCE(e, "Unknown --> Unknown") AS currency_route, 
         SAFE_CAST(f AS DATE) AS transaction_date
     FROM raw_transactions
     WHERE 
