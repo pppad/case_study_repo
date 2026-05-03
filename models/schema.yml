@@ -40,4 +40,4 @@ models:
         tests:
           - not_null
       - name: amount_gbp
-        description: "Total volume for the metric. Final values: R1 (£5,497) and R2 (£1,231 and £0)."
+        description: "Total volume for the metric. Final values: R1 (£3,718) and R2 (£365 and £0)."
