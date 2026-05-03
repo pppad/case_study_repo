@@ -13,7 +13,7 @@ cleaned_transactions AS (
         -- SAFE_CAST to Null unexpected values and COALESCE to flag them
         COALESCE(SAFE_CAST(b AS int64), -1) AS transaction_id,
         COALESCE(SAFE_CAST(c AS int64), -1) AS customer_id,
-        -- we have received negative values and are unsure whether the regulator wants gross or net volumes so both metrics will be produced
+        -- amount_gbp contains negative values and are unsure whether the regulator wants gross or net volumes so both metrics will be produced
         -- the ambiguity is documented here and after Compliance signs-off only the intended metric should remain 
         COALESCE(ABS(SAFE_CAST(d AS float64)), 0) AS amount_gbp_gross,  -- Filter out zero-value rows, and calculate Gross activity by converting negative values to positive
         COALESCE(SAFE_CAST(d AS float64), 0) AS amount_gbp_net,  -- Filter out zero-value rows, and calculate NET activity leaving negative values as is
@@ -24,6 +24,7 @@ cleaned_transactions AS (
         -- remove unecessary row
         trim(b) != 'transaction_id' 
         -- exclude amounts that may be 0 since this would inflate the population unecessarily
+        -- !!! Confirm with Compliance and Finance to report financial amounts with decimal points to avoid rounding down to 0. !!!
         AND SAFE_CAST(d AS float64) != 0
         -- catch Null exceptions, ensures data integrity for primary and foreign keys
         AND b IS NOT NULL
@@ -50,4 +51,4 @@ SELECT
     currency_route,
     transaction_date
 FROM deduplicated_transactions
-WHERE row_idx = 1 -- Only keep the first record per ID
+WHERE row_idx = 1 -- Only keep the first record per ID, exception reported, logic to be revisited
