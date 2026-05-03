@@ -36,18 +36,18 @@ models:
         tests:
           - not_null
       - name: currency_route
-        description: "Primary field for distinguishing Cross-currency (R1/R2a) vs Same-currency (R2b)."
+        description: "Primary field for distinguishing Cross-currency (R1/R2a) vs Same-currency (R2b)." # for R1, R2a and R2b defitions refer to the requirements document
         tests:
           - not_null
 
   - name: fct_regulatory_reports
     description: "Final aggregated output for the R1 and R2 regulatory requests."
     columns:
-  - name: Metric
-    description: "The specific regulatory label (e.g., R1: Total Cross-currency volume)."
-    tests:
-      - not_null
-  - name: amount_gbp
-    description: "Total volume for the metric. Final values: R1 (£3,718) and R2 (£365 and £0)."
-    tests:
-      - not_null
+      - name: Metric
+        description: "The specific regulatory label (e.g., R1: Total Cross-currency volume)."
+        tests:
+          - not_null
+      - name: amount_gbp
+        description: "Total volume for the metric."
+        tests:
+          - not_null
