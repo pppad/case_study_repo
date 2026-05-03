@@ -1,3 +1,8 @@
+-- multi-layered validation approach:
+-- using WHERE filters to exclude unidentifiable records at the source,
+-- SAFE_CAST & COALESCE logic within the transform layer to ensure pipeline stability and technical auditability
+-- ROWNUMBER() to deduplicate customers having the same ID
+
 WITH raw_customers AS (
     SELECT * FROM {{ ref('Customer') }} -- source: customer csv seed
 ),
@@ -34,10 +39,6 @@ SELECT
     customer_id,
     customer_type, 
     current_address_country,
-   customer_since_date
+    customer_since_date
 FROM deduplicated_customers
 WHERE row_idx = 1 -- Only keep the first record per ID
-
--- multi-layered validation approach: 
--- using WHERE filters to exclude unidentifiable records at the source, 
--- and COALESCE logic within the transform layer to ensure pipeline stability and technical auditability

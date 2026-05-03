@@ -1,10 +1,11 @@
 SELECT  t.transaction_id,
         t.customer_id,
-        t.amount_gbp,
+        t.amount_gbp_gross, -- this is pending Compliance and Regulator confirmation
+        t.amount_gbp_net, -- this is pending Compliance and Regulator confirmation
         t.currency_route,
         t.transaction_date,
         c.customer_type,
         c.current_address_country
-FROM {{ ref('stg_transactions') }} t
-INNER JOIN {{ ref('stg_customers') }} c 
-ON t.customer_id = c.customer_id
+FROM        {{ ref('stg_transactions') }} t
+INNER JOIN  {{ ref('stg_customers') }} c 
+        ON t.customer_id = c.customer_id

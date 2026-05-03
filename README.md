@@ -24,6 +24,8 @@ Logic was designed for total transparency, allowing regulators to verify the rat
 
 Gross Volume Calculation: Applied Absolute Value Logic (ABS()) to transaction amounts. This ensures reversals (e.g., Transaction ID 107) are disclosed as total financial activity rather than being netted out.  
 
+NET Volume Calculation: Additional metric calculated until Compliance signs off the intended metric.
+
 Regional Normalization: Consolidates variations like 'UK' and 'GBR' at the source to prevent under-reporting for the R1 UK Entity.  
 
 Currency Routing: Programmatically distinguishes between Cross-Currency (multiple routes) and Same-Currency (identical start/end) transactions to satisfy specific R2 requirements.  
@@ -42,7 +44,8 @@ Mission First (Standardization): The UK/US framework acts as a global blueprint,
 
 While current delivery uses best-effort proxies, the roadmap outlines a shift toward automated precision.  
 
-Current Proxy: Due to missing IP logs, current_address_country was used as a proxy for residency at the time of transaction.  
+Current Proxy: Due to missing IP logs, current_address_country was used as a proxy for residency at the time of transaction.
+The above is also pending Compliance sign-off before final submission. 
 
 SCD Type 2: Future state includes implementing Slowly Changing Dimensions to capture "point-in-time" address snapshots.  
 

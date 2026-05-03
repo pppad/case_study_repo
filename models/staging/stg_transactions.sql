@@ -1,3 +1,8 @@
+-- multi-layered validation approach: 
+-- using WHERE filters to exclude unidentifiable records at the source, 
+-- and COALESCE logic within the transform layer to ensure pipeline stability and technical auditability
+-- ROWNUMBER() to deduplicate customers having the same ID
+
 WITH raw_transactions AS (
     SELECT * FROM {{ ref('Transactions') }} -- source: transactions csv seed
 ),
@@ -8,7 +13,10 @@ cleaned_transactions AS (
         -- SAFE_CAST to Null unexpected values and COALESCE to flag them
         COALESCE(SAFE_CAST(b AS int64), -1) AS transaction_id,
         COALESCE(SAFE_CAST(c AS int64), -1) AS customer_id,
-        COALESCE(ABS(SAFE_CAST(d AS float64)), 0) AS amount_gbp,  -- Filter out zero-value rows, and calculate Gross activity instead of NET
+        -- we have received negative values and are unsure whether the regulator wants gross or net volumes so both metrics will be produced
+        -- the ambiguity is documented here and after Compliance signs-off only the intended metric should remain 
+        COALESCE(ABS(SAFE_CAST(d AS float64)), 0) AS amount_gbp_gross,  -- Filter out zero-value rows, and calculate Gross activity by converting negative values to positive
+        COALESCE(SAFE_CAST(d AS float64), 0) AS amount_gbp_net,  -- Filter out zero-value rows, and calculate NET activity leaving negative values as is
         COALESCE(e, "Unknown --> Unknown") AS currency_route,
         SAFE_CAST(f AS DATE) AS transaction_date
     FROM raw_transactions
@@ -37,12 +45,9 @@ deduplicated_transactions AS (
 SELECT
     transaction_id,
     customer_id,
-    amount_gbp,
+    amount_gbp_gross,
+    amount_gbp_net,
     currency_route,
     transaction_date
 FROM deduplicated_transactions
 WHERE row_idx = 1 -- Only keep the first record per ID
-
--- multi-layered validation approach: 
--- using WHERE filters to exclude unidentifiable records at the source, 
--- and COALESCE logic within the transform layer to ensure pipeline stability and technical auditability

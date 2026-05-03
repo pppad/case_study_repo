@@ -18,8 +18,12 @@ models:
         tests:
           - unique
           - not_null
-      - name: amount_gbp
+      - name: amount_gbp_gross # Pending clarification to potentially remove
         description: "Gross amount in GBP. Logic handles reversals (e.g., Transaction 107) via ABS()."
+        tests:
+          - not_null
+      - name: amount_gbp_net # Pending clarification to potentially remove
+        description: "Net amount in GBP."
         tests:
           - not_null
 
