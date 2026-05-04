@@ -2,7 +2,7 @@
 -- using WHERE filters to exclude unidentifiable records at the source,
 -- SAFE_CAST & COALESCE logic within the transform layer to ensure pipeline stability and technical auditability
 -- ROWNUMBER() to deduplicate customers having the same ID
--- !!! Code in this page requires further clarification and adjustments, points documented below. !!!
+-- !!! the Code below contains the following major caveats: 1) deduplicated to only latest customer. !!!
 
 WITH raw_customers AS (
     SELECT * FROM {{ ref('Customer') }} -- source: customer csv seed
@@ -42,4 +42,4 @@ SELECT
     current_address_country,
     customer_since_date
 FROM deduplicated_customers
-WHERE row_idx = 1 -- ! Only keep the first record per ID, exception to be captured in assumptions log and data issue log if an issue materialises !
+WHERE row_idx = 1 -- ! Only keep the first record per ID

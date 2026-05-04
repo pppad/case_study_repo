@@ -1,10 +1,10 @@
--- !!! Code in this page requires further clarification and adjustments, points documented below. !!!
+-- !!! the Code below contains the following major caveats: gross/net clarification. Revise according to signed-off requirements !!!
 
 SELECT  t.transaction_id,
         t.customer_id,
-        t.amount_gbp_gross, -- ! pending Compliance and Regulator confirmation, adjust this or Net below as necessary !
+        t.amount_gbp_gross,
         t.amount_gbp_net, 
-        t.currency_route, -- ! potential issue if non-standard, continue examining its contents and potentially explore with Compliance if can provide in two separate columns (from and to) for clarity !
+        t.currency_route,
         t.transaction_date,
         c.customer_type,
         c.current_address_country

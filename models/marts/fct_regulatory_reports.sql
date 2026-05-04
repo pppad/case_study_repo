@@ -1,10 +1,10 @@
--- !!! Code in this page requires further clarification and adjustments, points documented below. !!!
+-- !!! the Code below contains the following major caveats: 1) gross/net clarification, 2) Change R1 and/or R2 to move from current address country to IP/historic address. The rest is recorded in Assumptions register !!!
 
 WITH R1 AS(
-    SELECT  SUM(amount_gbp_gross) AS cross_currency_gbp_UK_gross, -- !!! pending clarification !!!
+    SELECT  SUM(amount_gbp_gross) AS cross_currency_gbp_UK_gross,
             SUM(amount_gbp_net) AS cross_currency_gbp_UK_net
     FROM    {{ ref('fct_regulatory_transactions') }} -- inside the marts model
-    WHERE   current_address_country IN ('UK', 'GBR') -- !!! potentially Substitute with IP address or Customer address at time of transaction when available !!! , proxy normalised to prevent under-reporting,
+    WHERE   current_address_country IN ('UK', 'GBR') -- proxy normalised to prevent under-reporting
         AND currency_route LIKE '%GBP%'
         -- SPLIT(column, ' delimiter '): This turns the string into an Array (a list) -->['GBP', 'USD'], 0 = 1st item, 1 = 2nd etc.
         AND SPLIT(currency_route, ' --> ')[OFFSET(0)] != SPLIT(currency_route, ' --> ')[OFFSET(1)]
@@ -13,7 +13,6 @@ WITH R1 AS(
 ), 
 R2 AS (
     SELECT  
-            -- ! Once Compliance signs-off remove unecessary metrics as appropriate !
             SUM(CASE WHEN SPLIT(currency_route, ' --> ')[OFFSET(0)] != SPLIT(currency_route, ' --> ')[OFFSET(1)] 
                     THEN amount_gbp_gross
                     ELSE 0
@@ -31,7 +30,7 @@ R2 AS (
                     ELSE 0
                 END) AS same_currency_GBP_USA_net  
     FROM    {{ ref('fct_regulatory_transactions') }} -- inside the marts model
-    WHERE   current_address_country = 'USA'  -- !!! This requirement is ambiguous, once clarified add the IP address from transactions or the historic address from customer !!!
+    WHERE   current_address_country = 'USA'  -- ! once clarified add the IP address from transactions or the historic address from customer !
         AND Transaction_date BETWEEN '2022-04-01' AND '2023-08-01'
 )
 -- We turn the final outputs to Long Data for better consumption from Vizualisation tools 
