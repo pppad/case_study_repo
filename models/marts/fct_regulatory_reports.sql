@@ -1,8 +1,8 @@
--- !!! Code in this page requires further clarification and adjustments, points documents below. !!!
+-- !!! Code in this page requires further clarification and adjustments, points documented below. !!!
 
 WITH R1 AS(
-    SELECT  SUM(amount_gbp_gross) AS cross_currency_gbp_UK_gross, -- !!! Once Compliance signs-off remove as appropriate !!!
-            SUM(amount_gbp_net) AS cross_currency_gbp_UK_net, -- !!! Once Compliance signs-off remove as appropriate !!!
+    SELECT  SUM(amount_gbp_gross) AS cross_currency_gbp_UK_gross, -- !!! Once Compliance signs-off remove this or below line as appropriate !!!
+            SUM(amount_gbp_net) AS cross_currency_gbp_UK_net
     FROM    {{ ref('fct_regulatory_transactions') }} -- inside the marts model
     WHERE   current_address_country IN ('UK', 'GBR') -- !!! potentially Substitute with IP address or Customer address at time of transaction when available !!! , proxy normalised to prevent under-reporting,
         AND currency_route LIKE '%GBP%'
@@ -13,7 +13,7 @@ WITH R1 AS(
 ), 
 R2 AS (
     SELECT  
-            -- !!! Once Compliance signs-off remove as appropriate !!!
+            -- ! Once Compliance signs-off remove unecessary metrics as appropriate !
             SUM(CASE WHEN SPLIT(currency_route, ' --> ')[OFFSET(0)] != SPLIT(currency_route, ' --> ')[OFFSET(1)] 
                     THEN amount_gbp_gross
                     ELSE 0
@@ -22,7 +22,6 @@ R2 AS (
                     THEN amount_gbp_gross
                     ELSE 0
                 END) AS same_currency_GBP_USA_gross, 
-            -- !!! Once Compliance signs-off remove as appropriate !!!
             SUM(CASE WHEN SPLIT(currency_route, ' --> ')[OFFSET(0)] != SPLIT(currency_route, ' --> ')[OFFSET(1)] 
                     THEN amount_gbp_net
                     ELSE 0
@@ -37,21 +36,21 @@ R2 AS (
 )
 -- We turn the final outputs to Long Data for better consumption from Vizualisation tools 
 -- To be able to present the data we include both and once clarified will be adjusted as necessary
-SELECT 'R1 (Gross)' AS Metric, cross_currency_GBP_UK_gross AS amount_gbp -- !!! Once Compliance signs-off remove as appropriate !!!
+SELECT 'R1 (cross_uk_Gross)' AS Metric, cross_currency_GBP_UK_gross AS amount_gbp
 FROM R1
 UNION ALL
-SELECT 'R1 (Net)' AS Metric, cross_currency_GBP_UK_net AS amount_gbp -- !!! Once Compliance signs-off remove as appropriate !!!
+SELECT 'R1 (cross_uk_Net)' AS Metric, cross_currency_GBP_UK_net AS amount_gbp
 FROM R1
 UNION ALL
-SELECT 'R2a (Gross)' AS Metric, cross_currency_GBP_USA_gross AS amount_gbp -- !!! Once Compliance signs-off remove as appropriate !!!
+SELECT 'R2a (cross_us_Gross)' AS Metric, cross_currency_GBP_USA_gross AS amount_gbp
 FROM R2
 UNION ALL
-SELECT 'R2a (Gross)' AS Metric, same_currency_GBP_USA_gross AS amount_gbp -- !!! Once Compliance signs-off remove as appropriate !!!
+SELECT 'R2b (same_us_Gross)' AS Metric, same_currency_GBP_USA_gross AS amount_gbp
 FROM R2
 UNION ALL
-SELECT 'R2a (Net)' AS Metric, cross_currency_GBP_USA_net AS amount_gbp -- !!! Once Compliance signs-off remove as appropriate !!!
+SELECT 'R2a (cross_us_Net)' AS Metric, cross_currency_GBP_USA_net AS amount_gbp
 FROM R2
 UNION ALL
-SELECT 'R2a (Net)' AS Metric, same_currency_GBP_USA_net AS amount_gbp -- !!! Once Compliance signs-off remove as appropriate !!!
+SELECT 'R2b (same_us_Net)' AS Metric, same_currency_GBP_USA_net AS amount_gbp
 FROM R2
 ORDER BY Metric ASC
