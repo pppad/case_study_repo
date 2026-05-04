@@ -1,7 +1,7 @@
 -- !!! Code in this page requires further clarification and adjustments, points documented below. !!!
 
 WITH R1 AS(
-    SELECT  SUM(amount_gbp_gross) AS cross_currency_gbp_UK_gross, -- !!! Once Compliance signs-off remove this or below line as appropriate !!!
+    SELECT  SUM(amount_gbp_gross) AS cross_currency_gbp_UK_gross, -- !!! pending clarification !!!
             SUM(amount_gbp_net) AS cross_currency_gbp_UK_net
     FROM    {{ ref('fct_regulatory_transactions') }} -- inside the marts model
     WHERE   current_address_country IN ('UK', 'GBR') -- !!! potentially Substitute with IP address or Customer address at time of transaction when available !!! , proxy normalised to prevent under-reporting,
@@ -29,7 +29,7 @@ R2 AS (
             SUM(CASE WHEN SPLIT(currency_route, ' --> ')[OFFSET(0)] = SPLIT(currency_route, ' --> ')[OFFSET(1)] 
                     THEN amount_gbp_net
                     ELSE 0
-                END) AS same_currency_GBP_USA_net,  
+                END) AS same_currency_GBP_USA_net  
     FROM    {{ ref('fct_regulatory_transactions') }} -- inside the marts model
     WHERE   current_address_country = 'USA'  -- !!! This requirement is ambiguous, once clarified add the IP address from transactions or the historic address from customer !!!
         AND Transaction_date BETWEEN '2022-04-01' AND '2023-08-01'
